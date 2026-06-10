@@ -5,6 +5,7 @@ export interface User {
   image: string;
   subscription: Date | null;
   freeRequestsUsed: number;
+  paidCredits: number;
 }
 
 export interface AppContextType {
@@ -15,6 +16,7 @@ export interface AppContextType {
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   LogoutUser: () => void;
+  fetchUser: () => Promise<void>;
 }
 
 export interface Job {
@@ -34,6 +36,7 @@ export interface Question {
   hint: string;
   category: string;
 }
+
 export interface InterviewData {
   role: string;
   round: string;
@@ -48,6 +51,7 @@ export interface Experience {
   endDate: string;
   bullets: string[];
 }
+
 export interface Education {
   degree: string;
   school: string;
@@ -55,11 +59,13 @@ export interface Education {
   year: string;
   gpa: string;
 }
+
 export interface Project {
   name: string;
   description: string;
   link: string;
 }
+
 export interface ResumeData {
   name: string;
   email: string;
@@ -78,12 +84,14 @@ export interface ScoreBlock {
   score: number;
   feedback: string;
 }
+
 export interface Suggestion {
   category: string;
   issue: string;
   recommendation: string;
   priority: "high" | "medium" | "low";
 }
+
 export interface Analysis {
   atsScore: number;
   scoreBreakdown: {
@@ -95,4 +103,20 @@ export interface Analysis {
   suggestions: Suggestion[];
   strengths: string[];
   summary: string;
+}
+
+export interface Review {
+  _id: string;
+  userName: string;
+  userImage: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface HistoryEntry {
+  _id: string;
+  type: "resume_analyse" | "job_match" | "resume_build" | "interview_prep";
+  summary: string;
+  createdAt: string;
 }

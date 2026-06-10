@@ -1,75 +1,58 @@
-import { instance } from "../index.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
 import TryCatch from "../middlewares/trycatch.js";
 import User from "../models/User.js";
-import crypto from "crypto";
-export const checkOut = TryCatch(async (req, res) => {
-    const user_id = req.user?._id;
-    if (!user_id) {
-        return res.status(400).json({
-            message: "No User Id",
-        });
-    }
-    const user = await User.findById(user_id);
-    const subTime = user?.subscription
-        ? new Date(user.subscription).getTime()
-        : 0;
-    const now = Date.now();
-    const isSubscribed = subTime > now;
-    if (isSubscribed) {
-        return res.status(400).json({
-            message: "User already subscribed",
-        });
-    }
-    const { duration } = req.body;
-    let amount;
-    if (duration === 1) {
-        amount = Number(299 * 100);
-    }
-    else {
-        amount = Number(1499 * 100);
-    }
-    const options = {
-        amount,
+export const instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+// Rs.1 = 100 paise per pack of 10 credits
+const CREDIT_PACK_PRICE_PAISE = 100; // ₹1
+const CREDITS_PER_PACK = 10;
+// POST /api/payment/checkout
+// Creates a Razorpay order for 1 credit pack
+export const createOrder = TryCatch(async (req, res) => {
+    const order = await instance.orders.create({
+        amount: CREDIT_PACK_PRICE_PAISE,
         currency: "INR",
+        receipt: `receipt_${Date.now()}`,
         notes: {
-            user_id: user_id?.toString(),
-            duration: duration.toString(),
+            userId: req.user?._id?.toString() ?? "",
+            credits: CREDITS_PER_PACK.toString(),
         },
-    };
-    const order = await instance.orders.create(options);
-    res.status(201).json({
-        order,
+    });
+    res.json({ order, key: process.env.RAZORPAY_KEY_ID });
+});
+// POST /api/payment/verify
+// Verifies Razorpay signature and credits the user
+export const verifyPayment = TryCatch(async (req, res) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const expectedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest("hex");
+    if (expectedSignature !== razorpay_signature) {
+        return res.status(400).json({ message: "Payment verification failed" });
+    }
+    const user = await User.findById(req.user?._id);
+    if (!user)
+        return res.status(404).json({ message: "User not found" });
+    user.paidCredits += CREDITS_PER_PACK;
+    await user.save();
+    res.json({
+        message: `Payment successful! ${CREDITS_PER_PACK} credits added.`,
+        updatedUser: user,
     });
 });
-export const paymentVerification = TryCatch(async (req, res) => {
-    const user = req.user;
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto
-        .createHmac("sha256", process.env.Razorpay_Secret)
-        .update(body)
-        .digest("hex");
-    const isAuthentic = expectedSignature === razorpay_signature;
-    if (isAuthentic) {
-        const order = await instance.orders.fetch(razorpay_order_id);
-        const duration = Number(order.notes?.duration);
-        const now = new Date();
-        let expiryDate;
-        if (duration === 1) {
-            expiryDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        }
-        else {
-            expiryDate = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000);
-        }
-        const updatedUser = await User.findByIdAndUpdate(user?._id, { subscription: expiryDate }, { new: true });
-        res.json({
-            message: "Subscription Purchased Successfully",
-            updatedUser,
-        });
-    }
-    else {
-        return res.status(400).json({
-            message: "Payment Failed",
-        });
-    }
+// GET /api/payment/status  – returns user's current credit info
+export const creditStatus = TryCatch(async (req, res) => {
+    const user = await User.findById(req.user?._id);
+    if (!user)
+        return res.status(404).json({ message: "User not found" });
+    res.json({
+        freeRequestsUsed: user.freeRequestsUsed,
+        freeRequestsLeft: user.getRemainingFreeRequests(),
+        paidCredits: user.paidCredits,
+        canMakeRequest: user.canMakeRequest(),
+    });
 });

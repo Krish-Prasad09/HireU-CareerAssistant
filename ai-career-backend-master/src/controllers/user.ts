@@ -8,14 +8,10 @@ import { AuthenticatedRequest } from "../middlewares/isAuth.js";
 export const loginUser = TryCatch(async (req, res) => {
   const { code } = req.body;
 
-  if (!code) {
-    return res.status(400).json({
-      message: "Authorization code is required",
-    });
-  }
+  if (!code)
+    return res.status(400).json({ message: "Authorization code is required" });
 
   const googleRes = await oauth2client.getToken(code);
-
   oauth2client.setCredentials(googleRes.tokens);
 
   const userRes = await axios.get(
@@ -27,26 +23,24 @@ export const loginUser = TryCatch(async (req, res) => {
   let user = await User.findOne({ email });
 
   if (!user) {
-    user = await User.create({
-      name,
-      email,
-      image: picture,
-    });
+    user = await User.create({ name, email, image: picture });
   }
 
   const token = jwt.sign({ _id: user._id }, process.env.JWT_SEC as string, {
     expiresIn: "15d",
   });
 
-  res.json({
-    message: "User Logged in",
-    token,
-    user,
-  });
+  res.json({ message: "User Logged in", token, user });
 });
 
 export const myProfile = TryCatch(async (req: AuthenticatedRequest, res) => {
-  const user = req.user;
+  res.json(req.user);
+});
 
-  res.json(user);
+// GET /api/user/history – returns the user's activity history
+export const myHistory = TryCatch(async (req: AuthenticatedRequest, res) => {
+  const user = await User.findById(req.user?._id).select("history");
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  res.json(user.history);
 });

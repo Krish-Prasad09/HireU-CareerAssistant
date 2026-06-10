@@ -28,7 +28,6 @@ export const AppProvider = ({ children }: AppProps) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
       setUser(data);
       setIsAuth(true);
     } catch (error) {
@@ -59,6 +58,7 @@ export const AppProvider = ({ children }: AppProps) => {
         setUser,
         user,
         LogoutUser,
+        fetchUser,
       }}
     >
       {children}
@@ -69,10 +69,6 @@ export const AppProvider = ({ children }: AppProps) => {
 
 export const useAppData = (): AppContextType => {
   const context = useContext(AppContext);
-
-  if (!context) {
-    throw new Error("useAppData must be used within AppProvider");
-  }
-
+  if (!context) throw new Error("useAppData must be used within AppProvider");
   return context;
 };
