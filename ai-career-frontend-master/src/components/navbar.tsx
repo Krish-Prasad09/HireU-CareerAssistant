@@ -16,7 +16,7 @@ const Navbar = () => {
           className="font-bold text-lg tracking-tight"
           style={{ fontFamily: "'Syne', sans-serif" }}
         >
-          Career<span className="text-gradient">AI</span>
+          Hire<span className="text-gradient">U</span>
         </span>
       </Link>
 

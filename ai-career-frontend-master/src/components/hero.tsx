@@ -26,7 +26,7 @@ function Hero() {
       >
         Land Your Dream Job
         <br />
-        <span className="text-gradient">Faster with AI</span>
+        <span className="text-gradient">Faster with HireU</span>
       </h1>
       <p
         className="text-white/45 text-lg md:text-xl max-w-xl leading-relaxed mb-10 animate-slide-up"
@@ -63,7 +63,7 @@ function Hero() {
       </div>
 
       <p className="text-white/25 text-xs mt-6">
-        First 3 analyses free • No credit card required
+        First few analyses free • No credit card required
       </p>
 
       <div
@@ -87,7 +87,7 @@ function Hero() {
             ✓ Strong keywords detected
           </span>
           <span className="text-xs text-yellow-400 font-medium">
-            ⚠️ Missing: qauntified impact
+            ⚠ Missing: quantified impact
           </span>
           <span className="text-xs text-white/40 font-medium">
             3 job matches found
