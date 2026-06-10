@@ -42,5 +42,10 @@ export const myHistory = TryCatch(async (req: AuthenticatedRequest, res) => {
   const user = await User.findById(req.user?._id).select("history");
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  res.json(user.history);
+  res.json(
+    [...user.history].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+  );
 });

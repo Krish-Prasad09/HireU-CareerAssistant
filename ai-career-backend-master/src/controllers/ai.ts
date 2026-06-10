@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import TryCatch from "../middlewares/trycatch.js";
 import { AuthenticatedRequest } from "../middlewares/isAuth.js";
-import User from "../models/User.js";
+import User, { IUser } from "../models/User.js";
 import {
   buildResumePrompt,
   generateInterviewPrompt,
@@ -21,9 +21,10 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY_GEMINI! });
  *   - Pro users are not counted (unlimited)
  */
 async function recordUsage(
-  user: Awaited<ReturnType<typeof User.findById>>,
+  user: IUser | null,
   type: "resume_analyse" | "job_match" | "resume_build" | "interview_prep",
-  summary: string
+  summary: string,
+  details?: unknown
 ) {
   if (!user) return;
 
@@ -36,7 +37,7 @@ async function recordUsage(
   }
 
   // Always push to history (capped at 100 entries to keep doc small)
-  user.history.unshift({ type, summary, createdAt: new Date() } as any);
+  user.history.unshift({ type, summary, details, createdAt: new Date() } as any);
   if (user.history.length > 100) user.history = user.history.slice(0, 100);
 
   await user.save();
@@ -94,7 +95,8 @@ export const analyseResume = TryCatch(
     await recordUsage(
       user,
       "resume_analyse",
-      `ATS Score: ${jsonResponse.atsScore ?? "—"}`
+      `ATS Score: ${jsonResponse.atsScore ?? "N/A"}`,
+      jsonResponse
     );
 
     res.json(jsonResponse);
@@ -149,7 +151,7 @@ export const jobMatcher = TryCatch(async (req: AuthenticatedRequest, res) => {
   }
 
   const jobCount = jsonResponse.jobs?.length ?? 0;
-  await recordUsage(user, "job_match", `${jobCount} jobs matched`);
+  await recordUsage(user, "job_match", `${jobCount} jobs matched`, jsonResponse);
 
   res.json(jsonResponse);
 });
@@ -209,7 +211,8 @@ export const generateInterview = TryCatch(
     await recordUsage(
       user,
       "interview_prep",
-      `${jsonResponse.role ?? "Unknown role"} · ${roundLabel}`
+      `${jsonResponse.role ?? "Unknown role"} - ${roundLabel}`,
+      jsonResponse
     );
 
     res.json(jsonResponse);
@@ -264,7 +267,7 @@ export const buildResume = TryCatch(async (req: AuthenticatedRequest, res) => {
   }
 
   const name = jsonResponse.name ?? formData?.name ?? "Resume";
-  await recordUsage(user, "resume_build", `Built resume for ${name}`);
+  await recordUsage(user, "resume_build", `Built resume for ${name}`, jsonResponse);
 
   res.json(jsonResponse);
 });

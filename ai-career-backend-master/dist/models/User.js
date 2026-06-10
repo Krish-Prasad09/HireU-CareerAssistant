@@ -6,6 +6,7 @@ const HistoryEntrySchema = new Schema({
         required: true,
     },
     summary: { type: String, required: true },
+    details: { type: Schema.Types.Mixed, default: null },
 }, { timestamps: true });
 const schema = new Schema({
     name: { type: String, required: true },

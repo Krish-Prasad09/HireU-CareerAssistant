@@ -6,6 +6,7 @@ export interface User {
   subscription: Date | null;
   freeRequestsUsed: number;
   paidCredits: number;
+  history?: HistoryEntry[];
 }
 
 export interface AppContextType {
@@ -118,5 +119,6 @@ export interface HistoryEntry {
   _id: string;
   type: "resume_analyse" | "job_match" | "resume_build" | "interview_prep";
   summary: string;
+  details?: unknown;
   createdAt: string;
 }

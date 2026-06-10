@@ -11,7 +11,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY_GEMINI });
  *   - If on paid credits     → decrement paidCredits
  *   - Pro users are not counted (unlimited)
  */
-async function recordUsage(user, type, summary) {
+async function recordUsage(user, type, summary, details) {
     if (!user)
         return;
     if (!user.hasProAccess()) {
@@ -23,7 +23,7 @@ async function recordUsage(user, type, summary) {
         }
     }
     // Always push to history (capped at 100 entries to keep doc small)
-    user.history.unshift({ type, summary, createdAt: new Date() });
+    user.history.unshift({ type, summary, details, createdAt: new Date() });
     if (user.history.length > 100)
         user.history = user.history.slice(0, 100);
     await user.save();
@@ -69,7 +69,7 @@ export const analyseResume = TryCatch(async (req, res) => {
             .status(500)
             .json({ message: "AI returned invalid JSON", rawResponse: response.text });
     }
-    await recordUsage(user, "resume_analyse", `ATS Score: ${jsonResponse.atsScore ?? "—"}`);
+    await recordUsage(user, "resume_analyse", `ATS Score: ${jsonResponse.atsScore ?? "N/A"}`, jsonResponse);
     res.json(jsonResponse);
 });
 // ─── Job Matcher ───────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ export const jobMatcher = TryCatch(async (req, res) => {
             .json({ message: "AI returned invalid JSON", rawResponse: response.text });
     }
     const jobCount = jsonResponse.jobs?.length ?? 0;
-    await recordUsage(user, "job_match", `${jobCount} jobs matched`);
+    await recordUsage(user, "job_match", `${jobCount} jobs matched`, jsonResponse);
     res.json(jsonResponse);
 });
 // ─── Generate Interview ────────────────────────────────────────────────────────
@@ -161,7 +161,7 @@ export const generateInterview = TryCatch(async (req, res) => {
             .json({ message: "AI returned invalid JSON", rawResponse: response.text });
     }
     const roundLabel = round === "hr" ? "HR Round" : "Technical Round";
-    await recordUsage(user, "interview_prep", `${jsonResponse.role ?? "Unknown role"} · ${roundLabel}`);
+    await recordUsage(user, "interview_prep", `${jsonResponse.role ?? "Unknown role"} - ${roundLabel}`, jsonResponse);
     res.json(jsonResponse);
 });
 // ─── Build Resume ──────────────────────────────────────────────────────────────
@@ -206,6 +206,6 @@ export const buildResume = TryCatch(async (req, res) => {
             .json({ message: "AI returned invalid JSON", rawResponse: response.text });
     }
     const name = jsonResponse.name ?? formData?.name ?? "Resume";
-    await recordUsage(user, "resume_build", `Built resume for ${name}`);
+    await recordUsage(user, "resume_build", `Built resume for ${name}`, jsonResponse);
     res.json(jsonResponse);
 });

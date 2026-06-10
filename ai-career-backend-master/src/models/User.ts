@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IHistoryEntry {
   type: "resume_analyse" | "job_match" | "resume_build" | "interview_prep";
   summary: string;
+  details?: unknown;
   createdAt: Date;
 }
 
@@ -28,6 +29,7 @@ const HistoryEntrySchema = new Schema<IHistoryEntry>(
       required: true,
     },
     summary: { type: String, required: true },
+    details: { type: Schema.Types.Mixed, default: null },
   },
   { timestamps: true }
 );
