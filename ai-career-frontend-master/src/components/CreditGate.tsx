@@ -25,7 +25,7 @@ export default function CreditGate({ onClose }: Props) {
       const token = localStorage.getItem("token");
       const { data } = await axios.post(
         `${server}/api/payment/checkout`,
-        {},
+        { planId: "credits_40" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -34,7 +34,7 @@ export default function CreditGate({ onClose }: Props) {
         amount: data.order.amount,
         currency: "INR",
         name: "HireU",
-        description: "10 AI Credits — ₹1",
+        description: "40 AI Credits — ₹29",
         order_id: data.order.id,
         handler: async function (response: any) {
           try {
@@ -91,8 +91,8 @@ export default function CreditGate({ onClose }: Props) {
 
         <div className="glass-card p-5 flex flex-col gap-2 border-indigo-500/20">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-white/80">10 AI Credits</span>
-            <span className="text-2xl font-black text-indigo-400">₹1</span>
+            <span className="font-semibold text-white/80">40 AI Credits</span>
+            <span className="text-2xl font-black text-indigo-400">₹29</span>
           </div>
           <p className="text-xs text-white/35">
             One-time purchase · No subscription · Never expires
@@ -109,7 +109,7 @@ export default function CreditGate({ onClose }: Props) {
           ) : (
             <CreditCard size={16} />
           )}
-          {loading ? "Processing…" : "Buy 10 Credits for ₹1"}
+          {loading ? "Processing…" : "Buy 40 Credits for ₹29"}
         </button>
 
         <p className="text-center text-xs text-white/25">

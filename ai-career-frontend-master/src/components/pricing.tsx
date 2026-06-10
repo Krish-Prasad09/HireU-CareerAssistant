@@ -6,7 +6,6 @@ import { CheckCircle, CreditCard, Loader2, Shield } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { server } from "../main";
-import CreditGate from "./CreditGate";
 
 declare global {
   interface Window {
@@ -100,12 +99,9 @@ function PlanCTA({
     setLoading(true);
 
     try {
-      // Determine duration from plan price
-      const duration = plan.price === "₹299" ? 1 : 6;
-
       const { data } = await axios.post(
         `${server}/api/payment/checkout`,
-        { duration },
+        { planId: plan.planId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -168,70 +164,9 @@ function PlanCTA({
   );
 }
 
-// ── Credit-pack section (₹1 for 10 requests) ─────────────────────────────────
+// ── Credit-pack section (Removed - now part of pricing plans) ─────────────────────────────────
 function CreditPackSection() {
-  const { isAuth } = useAppData();
-  const [showModal, setShowModal] = useState(false);
-
-  return (
-    <>
-      <div className="mt-10 max-w-sm mx-auto glass-card p-8 flex flex-col gap-5 border-amber-500/15">
-        <div>
-          <p className="text-xs text-white/35 uppercase tracking-widest mb-1">
-            Pay-as-you-go
-          </p>
-          <div className="flex items-end gap-1">
-            <span
-              className="text-4xl font-black"
-              style={{ fontFamily: "'Syne', sans-serif" }}
-            >
-              ₹1
-            </span>
-            <span className="text-white/35 text-sm mb-1">/ 10 requests</span>
-          </div>
-          <p className="text-white/40 text-sm mt-1">
-            No subscription needed · Buy whenever you run out
-          </p>
-        </div>
-
-        <div className="divider-subtle" />
-
-        <ul className="flex flex-col gap-2">
-          {[
-            "10 AI credits per pack",
-            "Works for all features",
-            "Never expires",
-            "Instant activation",
-          ].map((f) => (
-            <li
-              key={f}
-              className="flex items-center gap-2 text-sm text-white/60"
-            >
-              <CheckCircle size={13} className="text-amber-400 shrink-0" />
-              {f}
-            </li>
-          ))}
-        </ul>
-
-        <button
-          className="btn-primary flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold"
-          onClick={() => (isAuth ? setShowModal(true) : null)}
-          disabled={!isAuth}
-          title={!isAuth ? "Login first" : ""}
-        >
-          <CreditCard size={14} />
-          Buy 10 Credits — ₹1
-        </button>
-        {!isAuth && (
-          <p className="text-center text-xs text-white/25">
-            Login to purchase credits
-          </p>
-        )}
-      </div>
-
-      {showModal && <CreditGate onClose={() => setShowModal(false)} />}
-    </>
-  );
+  return null;
 }
 
 const Pricing = () => {
@@ -245,11 +180,11 @@ const Pricing = () => {
           className="text-3xl md:text-5xl font-extrabold tracking-tight"
           style={{ fontFamily: "'Syne', sans-serif" }}
         >
-          Start free. Upgrade{" "}
-          <span className="text-gradient">when ready.</span>
+          Affordable pricing,{" "}
+          <span className="text-gradient">unlimited potential.</span>
         </h2>
         <p className="text-white/40 mt-4 max-w-md mx-auto">
-          Your first 10 requests are completely free — no card needed.
+          Start free with 10 requests. Upgrade anytime to unlock more features and credits.
         </p>
         <div className="flex justify-center mt-6">
           <StatusBadge />

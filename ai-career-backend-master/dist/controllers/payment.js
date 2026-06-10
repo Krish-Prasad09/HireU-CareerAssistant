@@ -6,25 +6,41 @@ export const instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-// Rs.1 = 100 paise per pack of 10 credits
-const CREDIT_PACK_PRICE_PAISE = 100; // ₹1
-const CREDITS_PER_PACK = 10;
-// POST /api/payment/checkout
-// Creates a Razorpay order for 1 credit pack
+const PLANS = {
+    credits_40: {
+        amount: 2900,
+        description: "40 AI Credits",
+        credits: 40,
+    },
+    pro_monthly: {
+        amount: 29900,
+        description: "Monthly Unlimited Plan",
+        months: 1,
+    },
+};
+function addMonths(date, months) {
+    const next = new Date(date);
+    next.setMonth(next.getMonth() + months);
+    return next;
+}
 export const createOrder = TryCatch(async (req, res) => {
+    const { planId } = req.body;
+    if (!planId || !(planId in PLANS)) {
+        return res.status(400).json({ message: "Invalid payment plan" });
+    }
+    const plan = PLANS[planId];
     const order = await instance.orders.create({
-        amount: CREDIT_PACK_PRICE_PAISE,
+        amount: plan.amount,
         currency: "INR",
-        receipt: `receipt_${Date.now()}`,
+        receipt: `${planId}_${Date.now()}`,
         notes: {
             userId: req.user?._id?.toString() ?? "",
-            credits: CREDITS_PER_PACK.toString(),
+            planId,
+            description: plan.description,
         },
     });
     res.json({ order, key: process.env.RAZORPAY_KEY_ID });
 });
-// POST /api/payment/verify
-// Verifies Razorpay signature and credits the user
 export const verifyPayment = TryCatch(async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const expectedSignature = crypto
@@ -37,14 +53,27 @@ export const verifyPayment = TryCatch(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user)
         return res.status(404).json({ message: "User not found" });
-    user.paidCredits += CREDITS_PER_PACK;
+    const order = await instance.orders.fetch(razorpay_order_id);
+    const planId = order.notes?.planId;
+    if (!planId || !(planId in PLANS)) {
+        return res.status(400).json({ message: "Unknown payment plan" });
+    }
+    const plan = PLANS[planId];
+    let message = "Payment successful!";
+    if ("credits" in plan) {
+        user.paidCredits += plan.credits;
+        message = `Payment successful! ${plan.credits} credits added.`;
+    }
+    else {
+        const startsFrom = user.subscription && new Date(user.subscription) > new Date()
+            ? new Date(user.subscription)
+            : new Date();
+        user.subscription = addMonths(startsFrom, plan.months);
+        message = "Payment successful! Unlimited plan activated for 1 month.";
+    }
     await user.save();
-    res.json({
-        message: `Payment successful! ${CREDITS_PER_PACK} credits added.`,
-        updatedUser: user,
-    });
+    res.json({ message, updatedUser: user });
 });
-// GET /api/payment/status  – returns user's current credit info
 export const creditStatus = TryCatch(async (req, res) => {
     const user = await User.findById(req.user?._id);
     if (!user)
@@ -53,6 +82,8 @@ export const creditStatus = TryCatch(async (req, res) => {
         freeRequestsUsed: user.freeRequestsUsed,
         freeRequestsLeft: user.getRemainingFreeRequests(),
         paidCredits: user.paidCredits,
+        subscription: user.subscription,
+        hasProAccess: user.hasProAccess(),
         canMakeRequest: user.canMakeRequest(),
     });
 });
