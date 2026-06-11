@@ -21,7 +21,6 @@ From PDF to polished LaTeX resume — powered by Gemini AI.
 
 HireU is a full-stack AI career assistant that walks users through the entire job preparation workflow in one place — upload a resume, get a detailed ATS analysis, match it against relevant roles, generate interview questions tailored to the position, and rebuild the resume with AI suggestions. Everything exports cleanly to LaTeX for Overleaf.
 
-> **Demo & screenshots** — _coming soon_
 
 ---
 
