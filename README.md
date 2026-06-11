@@ -1,102 +1,93 @@
-# HireU - CareerAssistant
+# HireU - Career Assistant
 
-An AI-powered resume analysis and career development platform that helps users analyse resumes, match jobs, prep for interviews, and build polished resumes — all driven by Google Gemini API.
-
-> 🚀 **Live Features**: Resume analysis, job matching, interview prep, and resume builder with LaTeX export. Deployment coming soon.
-
----
+HireU is an AI-powered career assistant that helps users analyse resumes, match jobs, prepare for interviews, and build polished resumes with LaTeX export. It uses a Vite/React frontend, an Express/TypeScript backend, MongoDB, Google OAuth, and Gemini.
 
 ## Features
 
-- **Resume Analyser** — Upload a PDF resume and get structured AI feedback
-- **Job Matcher** — Match yourself to relevant roles via manual skills input or resume upload
-- **Interview Prep** — Generate round-specific interview questions (manual or resume-based)
-- **Resume Builder** — Build a resume from scratch via a form, or improve an existing one with AI
-
----
+- Resume Analyser: upload a PDF resume and get structured AI feedback.
+- Job Matcher: match yourself to relevant roles using manual skills input or resume upload.
+- Interview Prep: generate round-specific interview questions from manual input or a resume.
+- Resume Builder: create a resume from a form, improve an existing resume with AI, and export LaTeX.
+- Google OAuth login with JWT-backed authenticated API routes.
+- Credit and subscription model with Razorpay routes wired for payments.
 
 ## Tech Stack
 
 ### Frontend
+
 | Tech | Purpose |
-|---|---|
+| --- | --- |
 | React 19 + TypeScript | UI framework |
-| Vite 8 | Build tool & dev server |
+| Vite 8 | Build tool and dev server |
 | Tailwind CSS v4 | Styling |
 | React Router v7 | Client-side routing |
 | `@react-oauth/google` | Google OAuth login |
 | Axios | HTTP client |
-| jsPDF | PDF export for generated resumes |
-| react-hot-toast | Notifications |
+| jsPDF | PDF export |
 | lucide-react | Icons |
 
 ### Backend
+
 | Tech | Purpose |
-|---|---|
+| --- | --- |
 | Node.js + Express 5 | REST API server |
 | TypeScript | Type safety |
-| MongoDB + Mongoose | Database & ODM |
-| `@google/genai` (Gemini 2.5 Flash) | AI features |
+| MongoDB + Mongoose | Database and ODM |
+| `@google/genai` | Gemini-powered AI features |
 | Google APIs / OAuth | Authentication |
 | JSON Web Tokens | Session management |
-| Razorpay *(wired, inactive)* | Payments (ready for activation) |
-| dotenv | Environment config |
-
----
+| Razorpay | Payment and credit routes |
 
 ## Project Structure
 
-```
+```text
 aicareer/
 ├── backend/
 │   ├── src/
-│   │   ├── config/         # DB, Google OAuth, AI prompts
-│   │   ├── controllers/    # ai.ts, user.ts
-│   │   ├── middlewares/    # isAuth.ts, trycatch.ts
-│   │   ├── models/         # User.ts
-│   │   ├── routes/         # ai.ts, user.ts
-│   │   └── index.ts        # Express app entry
-│   ├── dist/               # Compiled JS output
-│   ├── .env
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── index.ts
+│   ├── .env.example
 │   ├── package.json
 │   └── tsconfig.json
-│
-└── frontend/
-    ├── src/
-    │   ├── components/     # Navbar, Footer, Pricing, Hero, etc.
-    │   ├── context/        # AppContext (global state)
-    │   ├── pages/          # Home, Login, Account, Analyse,
-    │   │                   # JobMatcher, Interview, BuildResume
-    │   ├── types.ts
-    │   ├── utils.ts
-    │   └── App.tsx
-    ├── public/             # Static assets
-    ├── index.html
-    ├── package.json
-    ├── tsconfig.json
-    ├── vite.config.ts
-    └── eslint.config.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── .env.example
+│   ├── vercel.json
+│   ├── package.json
+│   └── vite.config.ts
+├── render.yaml
+└── README.md
 ```
-
----
 
 ## Running Locally
 
 ### Prerequisites
-- Node.js ≥ 18
-- A MongoDB URI (Atlas or local)
-- A [Google Cloud project](https://console.cloud.google.com) with OAuth 2.0 credentials
-- A [Google AI Studio](https://aistudio.google.com) Gemini API key
 
----
+- Node.js 20 recommended.
+- MongoDB URI from MongoDB Atlas or a local MongoDB server.
+- Google Cloud OAuth 2.0 web client.
+- Gemini API key from Google AI Studio.
+- Razorpay key ID and key secret if payment routes are enabled.
 
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
+cp .env.example .env
+npm install
+npm run dev
 ```
 
-Create a `.env` file:
+Update `backend/.env`:
 
 ```env
 PORT=5000
@@ -104,113 +95,158 @@ MONGO_URI=your_mongodb_connection_string
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 API_KEY_GEMINI=your_gemini_api_key
-JWT_SEC=your_jwt_secret
+JWT_SEC=your_long_random_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
-Install and run:
+The API runs at `http://localhost:5000`.
 
-```bash
-npm install
-npm run dev       # TypeScript watch + node --watch
-# or
-npm run build     # compile TS to dist/
-npm start         # run compiled output
-```
-
-The server starts at `http://localhost:5000`.
-
----
-
-### 2. Frontend
+### Frontend
 
 ```bash
 cd frontend
-```
-
-Create a `.env` file (Vite exposes variables prefixed with `VITE_`):
-
-```env
-VITE_BACKEND_URL=http://localhost:5000
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-```
-
-Install and run:
-
-```bash
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-The app starts at `http://localhost:5173`.
+Update `frontend/.env`:
 
----
+```env
+VITE_API_URL=http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+The app runs at `http://localhost:5173`.
+
+## Production Deployment
+
+The repo is configured for this deployment split:
+
+- Backend API: Render web service using `render.yaml`.
+- Frontend app: Vercel Vite deployment using `frontend/vercel.json`.
+- Database: MongoDB Atlas.
+
+### 1. Push the Code to GitHub
+
+Make sure the latest code is pushed to GitHub:
+
+```bash
+git add .
+git commit -m "Prepare HireU for deployment"
+git push origin main
+```
+
+### 2. Deploy the Backend on Render
+
+1. Open [Render](https://render.com).
+2. Choose **New +** then **Blueprint**.
+3. Connect this GitHub repository.
+4. Render will detect `render.yaml` and create the `hireu-career-assistant-api` web service.
+5. Add these environment variables in Render:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+API_KEY_GEMINI=your_gemini_api_key
+JWT_SEC=your_long_random_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+```
+
+Render will provide a backend URL like:
+
+```text
+https://hireu-career-assistant-api.onrender.com
+```
+
+Confirm it is live by opening:
+
+```text
+https://your-render-service-url.onrender.com/health
+```
+
+### 3. Deploy the Frontend on Vercel
+
+1. Open [Vercel](https://vercel.com).
+2. Import the same GitHub repository.
+3. Set the project root directory to `frontend`.
+4. Use these build settings:
+
+```text
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm ci
+```
+
+5. Add these environment variables in Vercel:
+
+```env
+VITE_API_URL=https://your-render-service-url.onrender.com
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+6. Deploy the project.
+
+### 4. Update Google OAuth
+
+In Google Cloud Console, update the OAuth client used by the app:
+
+- Authorized JavaScript origins:
+  - `http://localhost:5173`
+  - `https://your-vercel-app.vercel.app`
+- Authorized redirect URIs are not required for the current `postmessage` OAuth flow.
+
+### 5. Final Production Checks
+
+- Open the Vercel URL.
+- Sign in with Google.
+- Test resume analysis, job matching, interview prep, and resume builder.
+- Check Render logs if any API request fails.
+- Keep Render and Vercel environment variables in sync if keys change.
 
 ## API Routes
 
+```text
+GET   /                         # API status
+GET   /health                   # Render health check
+POST  /api/user/login           # Google OAuth login
+GET   /api/user/me              # Current user profile
+GET   /api/user/history         # User history
+GET   /api/review               # Reviews
+POST  /api/review               # Create review
+POST  /api/ai/analyse           # Resume analysis
+POST  /api/ai/jobmatcher        # Job matching
+POST  /api/ai/interview         # Interview question generation
+POST  /api/ai/buildresume       # Resume builder / improver
+POST  /api/ai/generate-latex    # LaTeX resume generation
+POST  /api/payment/checkout     # Razorpay order
+POST  /api/payment/verify       # Razorpay verification
+GET   /api/payment/status       # Credit/subscription status
 ```
-POST  /api/user/...          # Google OAuth login, profile
-POST  /api/ai/analyse        # Resume analysis (PDF base64)
-POST  /api/ai/jobmatcher     # Job matching (manual or PDF)
-POST  /api/ai/interview      # Interview question generation
-POST  /api/ai/buildresume    # Resume builder / improver
+
+AI and payment routes require:
+
+```text
+Authorization: Bearer <token>
 ```
 
-All `/api/ai/*` routes require a valid JWT (`Authorization: Bearer <token>`).
+## LaTeX Resume Generator
 
-## LaTeX Resume Generator (IIT Indore Format)
+The resume builder can export an editable `.tex` file based on form data.
 
-The app includes a **LaTeX Resume Generator** that exports resumes in the official IIT Indore format. The LaTeX is generated **directly from your form data** (not AI-generated), perfect for compiling locally or on Overleaf.
+- Converts resume form data directly to LaTeX.
+- Uses an IIT Indore-style resume template.
+- Includes personal details, education, experience, projects, and skills.
+- Can be compiled locally with MiKTeX or TeX Live, or online with Overleaf.
 
-### Features
-- **Direct Form-to-LaTeX** — Converts your BuildResume form data directly to LaTeX (no AI involved)
-- **IIT Indore Template** — Professional resume template based on IIT Indore's official LaTeX format
-- **One-Click Export** — Download your resume as a `.tex` file ready for compilation in Overleaf or locally
-- **Custom LaTeX Sections** — Includes:
-  - Personal details (name, phone, email, LinkedIn)
-  - Education table with CGPA and year
-  - Experience section with bullet points
-  - Projects section with links
-  - Technical and soft skills
-- **Fully Customizable** — Edit the LaTeX source code to:
-  - Add your photo
-  - Change margins, fonts, or colors
-  - Add additional sections (positions, achievements, etc.)
-  - Adjust any styling
+## Deployment Notes
 
-### How to Use
-1. Fill out the **Resume Builder** form with your details
-2. Click **"Download LaTeX"** button (next to PDF download)
-3. **Option A** — Save the `.tex` file and compile locally with MiKTeX, TeX Live, or similar
-4. **Option B** — Open in [Overleaf](https://www.overleaf.com) and compile online
-5. Update placeholder paths (e.g., `Your_Photo.jpg`, `IITI Logo - Refined.jpg`)
-6. Export as PDF from your LaTeX editor
-
-### LaTeX Output Details
-- **File Format** — `.tex` (plain text, fully editable)
-- **License** — MIT
-- **Packages Included** — Full LaTeX preamble with all necessary packages (graphicx, hyperref, tabularx, etc.)
-- **Template Structure** — Custom commands for resume sections (`\resumeSubheading`, `\resumeProject`, etc.)
-- **Ready to Compile** — Can be compiled immediately to PDF without modifications (if you add images)
-
----
-
-Users sign in with Google OAuth. Each user has:
-- `freeRequestsUsed` — tracks free-tier usage
-- `subscription` — date until Pro access is valid
-- `hasProAccess()` — checks if subscription is still active
-- `canMakeRequest()` — gate for all AI routes (currently open for testing)
-
-Razorpay integration is wired in but commented out — ready to be enabled for monetisation.
-
----
-
-## Deployment (Coming Soon)
-
-Planned stack:
-- **Backend** → [Render](https://render.com) (Node.js web service)
-- **Frontend** → [Vercel](https://vercel.com) (Vite/React)
-- **Database** → MongoDB Atlas (already configured)
-
-Steps will be added here once live. You'll need to set the same environment variables in each platform's dashboard and update `VITE_BACKEND_URL` to point to the deployed backend URL.
-
----
+- `VITE_API_URL` must point to the deployed backend URL in production.
+- `VITE_GOOGLE_CLIENT_ID` must match the Google OAuth client configured for the deployed frontend domain.
+- Render sets `PORT` automatically; local development falls back to `5000`.
+- The backend exposes `/health` for Render health checks.
+- `frontend/vercel.json` rewrites all routes to `index.html` so direct navigation works with React Router.

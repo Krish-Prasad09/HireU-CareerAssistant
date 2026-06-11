@@ -37,17 +37,26 @@ connectDB().then(() => console.log("DB connected"));
 // });
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+app.get("/", (_req, res) => {
+  res.json({ status: "ok", service: "HireU Career Assistant API" });
+});
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/api/user", userRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/review", reviewRoutes);
 app.use("/api/payment", paymentRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
