@@ -3,6 +3,7 @@ import { isAuth } from "../middlewares/isAuth.js";
 import {
   analyseResume,
   buildResume,
+  enhanceBullet,
   generateInterview,
   jobMatcher,
 } from "../controllers/ai.js";
@@ -13,5 +14,6 @@ router.post("/analyse", isAuth, analyseResume);
 router.post("/job-matcher", isAuth, jobMatcher);
 router.post("/interview", isAuth, generateInterview);
 router.post("/resume-build", isAuth, buildResume);
+router.post("/enhance-bullet", isAuth, enhanceBullet);
 
 export default router;

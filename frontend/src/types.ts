@@ -81,6 +81,74 @@ export interface ResumeData {
   certifications: string[];
 }
 
+export interface IITEducation {
+  degree: string;
+  institute: string;
+  cgpaOrPercentage: string;
+  year: string;
+}
+
+export interface IITExperience {
+  organization: string;
+  location: string;
+  role: string;
+  dates: string;
+  bullets: string[];
+}
+
+export interface IITProject {
+  name: string;
+  subtitle: string;
+  dates: string;
+  linkLabel: string;
+  linkUrl: string;
+  bullets: string[];
+}
+
+export interface IITCategory {
+  category: string;
+  items: string;
+}
+
+export interface IITPosition {
+  position: string;
+  organization: string;
+  tenure: string;
+}
+
+export interface IITAchievement {
+  title: string;
+  description: string;
+  year: string;
+}
+
+export interface IITResumeData {
+  personal: {
+    name: string;
+    roll: string;
+    course: string;
+    branch: string;
+    phone: string;
+    email1: string;
+    email2: string;
+    github: string;
+    linkedin: string;
+  };
+  education: IITEducation[];
+  experience: IITExperience[];
+  projects: IITProject[];
+  skills: IITCategory[];
+  courses: IITCategory[];
+  positions: IITPosition[];
+  achievements: IITAchievement[];
+}
+
+export interface IITLatexResponse {
+  resume: IITResumeData;
+  latex: string;
+  fileName: string;
+}
+
 export interface ScoreBlock {
   score: number;
   feedback: string;

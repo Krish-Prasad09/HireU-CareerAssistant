@@ -177,3 +177,20 @@ Rules:
 - Questions should progressively get harder
 - Keep questions realistic and commonly asked in actual interviews
 `;
+
+export const enhanceBulletPrompt = (text: string) => `
+You are an expert resume writer specializing in crafting compelling, achievement-focused bullet points.
+
+Your task is to enhance the following resume bullet point to be more impactful and ATS-optimized:
+"${text}"
+
+Rules for enhancement:
+1. Start with a strong action verb (e.g., Developed, Implemented, Designed, Optimized, Analyzed)
+2. Include specific technologies or tools if relevant
+3. Quantify the impact whenever possible (e.g., X% improvement, reduced by Y seconds, handled Z users)
+4. Make it achievement-focused and result-oriented
+5. Keep it concise (ideally 1-2 lines)
+6. Use professional language appropriate for a resume
+
+Respond with ONLY the enhanced bullet point text, no quotes, no JSON, no additional explanation. Just the raw enhanced text.
+`;

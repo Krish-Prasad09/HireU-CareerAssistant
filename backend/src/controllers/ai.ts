@@ -4,11 +4,12 @@ import TryCatch from "../middlewares/trycatch.js";
 import { AuthenticatedRequest } from "../middlewares/isAuth.js";
 import User, { IUser } from "../models/User.js";
 import {
-  buildResumePrompt,
+  enhanceBulletPrompt,
   generateInterviewPrompt,
   JobMatcherPrompt,
   ResumeAnalyserPrompt,
 } from "../config/prompt.js";
+import { generateLatexResume, IITResumeData } from "../services/latexGenerator.js";
 
 dotenv.config();
 
@@ -221,13 +222,37 @@ export const generateInterview = TryCatch(
 
 // ─── Build Resume ──────────────────────────────────────────────────────────────
 export const buildResume = TryCatch(async (req: AuthenticatedRequest, res) => {
-  const { mode, formData, pdfBase64 } = req.body;
+  const { resumeData, formData } = req.body as {
+    resumeData?: IITResumeData;
+    formData?: IITResumeData;
+  };
+  const resume = resumeData ?? formData;
 
-  if (!mode) return res.status(400).json({ message: "Mode is required" });
-  if (mode === "manual" && !formData)
-    return res.status(400).json({ message: "Form data is required" });
-  if (mode === "improve" && !pdfBase64)
-    return res.status(400).json({ message: "PDF is required" });
+  if (!resume)
+    return res.status(400).json({ message: "Resume data is required" });
+  if (!resume.personal?.name?.trim())
+    return res.status(400).json({ message: "Full name is required" });
+  if (!resume.personal?.roll?.trim())
+    return res.status(400).json({ message: "Roll number is required" });
+
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    return res.status(401).json({ message: "Please Login" });
+  }
+
+  const latex = generateLatexResume(resume);
+  const safeName = resume.personal.name.trim().replace(/[^\w-]+/g, "_");
+  const fileName = `${safeName || "IIT_Indore"}_Resume.tex`;
+
+  res.json({ resume, latex, fileName });
+});
+
+// ─── Enhance Bullet Point ──────────────────────────────────────────────────────
+export const enhanceBullet = TryCatch(async (req: AuthenticatedRequest, res) => {
+  const { text } = req.body;
+
+  if (!text?.trim())
+    return res.status(400).json({ message: "Bullet point text is required" });
 
   const user = await User.findById(req.user?._id);
   if (!user || !user.canMakeRequest()) {
@@ -238,36 +263,26 @@ export const buildResume = TryCatch(async (req: AuthenticatedRequest, res) => {
     });
   }
 
-  const parts: any[] = [{ text: buildResumePrompt(mode, formData) }];
-  if (mode === "improve") {
-    parts.push({
-      inlineData: {
-        mimeType: "application/pdf",
-        data: pdfBase64.replace(/^data:application\/pdf;base64,/, ""),
-      },
-    });
-  }
-
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: [{ role: "user", parts }],
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: enhanceBulletPrompt(text) }],
+      },
+    ],
   });
 
-  const rawText = response.text?.replace(/```json|```/g, "").trim();
-  if (!rawText)
+  const enhanced = response.text?.trim();
+  if (!enhanced)
     return res.status(500).json({ message: "AI returned empty response" });
 
-  let jsonResponse;
-  try {
-    jsonResponse = JSON.parse(rawText);
-  } catch {
-    return res
-      .status(500)
-      .json({ message: "AI returned invalid JSON", rawResponse: response.text });
-  }
+  await recordUsage(
+    user,
+    "resume_analyse",
+    `Enhanced bullet point`,
+    { originalText: text, enhancedText: enhanced }
+  );
 
-  const name = jsonResponse.name ?? formData?.name ?? "Resume";
-  await recordUsage(user, "resume_build", `Built resume for ${name}`, jsonResponse);
-
-  res.json(jsonResponse);
+  res.json({ enhanced });
 });

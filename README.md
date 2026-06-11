@@ -151,9 +151,42 @@ POST  /api/ai/buildresume    # Resume builder / improver
 
 All `/api/ai/*` routes require a valid JWT (`Authorization: Bearer <token>`).
 
----
+## LaTeX Resume Generator (IIT Indore Format)
 
-## User & Subscription Model
+The app includes a **LaTeX Resume Generator** that exports resumes in the official IIT Indore format. The LaTeX is generated **directly from your form data** (not AI-generated), perfect for compiling locally or on Overleaf.
+
+### Features
+- **Direct Form-to-LaTeX** — Converts your BuildResume form data directly to LaTeX (no AI involved)
+- **IIT Indore Template** — Professional resume template based on IIT Indore's official LaTeX format
+- **One-Click Export** — Download your resume as a `.tex` file ready for compilation in Overleaf or locally
+- **Custom LaTeX Sections** — Includes:
+  - Personal details (name, phone, email, LinkedIn)
+  - Education table with CGPA and year
+  - Experience section with bullet points
+  - Projects section with links
+  - Technical and soft skills
+- **Fully Customizable** — Edit the LaTeX source code to:
+  - Add your photo
+  - Change margins, fonts, or colors
+  - Add additional sections (positions, achievements, etc.)
+  - Adjust any styling
+
+### How to Use
+1. Fill out the **Resume Builder** form with your details
+2. Click **"Download LaTeX"** button (next to PDF download)
+3. **Option A** — Save the `.tex` file and compile locally with MiKTeX, TeX Live, or similar
+4. **Option B** — Open in [Overleaf](https://www.overleaf.com) and compile online
+5. Update placeholder paths (e.g., `Your_Photo.jpg`, `IITI Logo - Refined.jpg`)
+6. Export as PDF from your LaTeX editor
+
+### LaTeX Output Details
+- **File Format** — `.tex` (plain text, fully editable)
+- **License** — MIT
+- **Packages Included** — Full LaTeX preamble with all necessary packages (graphicx, hyperref, tabularx, etc.)
+- **Template Structure** — Custom commands for resume sections (`\resumeSubheading`, `\resumeProject`, etc.)
+- **Ready to Compile** — Can be compiled immediately to PDF without modifications (if you add images)
+
+---
 
 Users sign in with Google OAuth. Each user has:
 - `freeRequestsUsed` — tracks free-tier usage
