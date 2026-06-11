@@ -91,6 +91,7 @@ Update `backend/.env`:
 
 ```env
 PORT=5000
+FRONTEND_URL=http://localhost:5173
 MONGO_URI=your_mongodb_connection_string
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
@@ -147,6 +148,7 @@ git push origin main
 5. Add these environment variables in Render:
 
 ```env
+FRONTEND_URL=https://hire-u-career-assistant.vercel.app
 MONGO_URI=your_mongodb_connection_string
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
@@ -159,13 +161,13 @@ RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 Render will provide a backend URL like:
 
 ```text
-https://hireu-career-assistant-api.onrender.com
+https://hireu-careerassistant.onrender.com
 ```
 
 Confirm it is live by opening:
 
 ```text
-https://your-render-service-url.onrender.com/health
+https://hireu-careerassistant.onrender.com/health
 ```
 
 ### 3. Deploy the Frontend on Vercel
@@ -185,7 +187,7 @@ Install Command: npm ci
 5. Add these environment variables in Vercel:
 
 ```env
-VITE_API_URL=https://your-render-service-url.onrender.com
+VITE_API_URL=https://hireu-careerassistant.onrender.com
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
@@ -197,7 +199,7 @@ In Google Cloud Console, update the OAuth client used by the app:
 
 - Authorized JavaScript origins:
   - `http://localhost:5173`
-  - `https://your-vercel-app.vercel.app`
+  - `https://hire-u-career-assistant.vercel.app`
 - Authorized redirect URIs are not required for the current `postmessage` OAuth flow.
 
 ### 5. Final Production Checks
@@ -246,6 +248,7 @@ The resume builder can export an editable `.tex` file based on form data.
 ## Deployment Notes
 
 - `VITE_API_URL` must point to the deployed backend URL in production.
+- `FRONTEND_URL` must point to the deployed Vercel URL in production.
 - `VITE_GOOGLE_CLIENT_ID` must match the Google OAuth client configured for the deployed frontend domain.
 - Render sets `PORT` automatically; local development falls back to `5000`.
 - The backend exposes `/health` for Render health checks.

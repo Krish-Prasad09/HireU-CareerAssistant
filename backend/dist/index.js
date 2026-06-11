@@ -31,7 +31,21 @@ connectDB().then(() => console.log("DB connected"));
 // });
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://hire-u-career-assistant.vercel.app",
+    process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    credentials: true,
+}));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.get("/", (_req, res) => {
