@@ -29,9 +29,9 @@ HireU is a full-stack AI career assistant that walks users through the entire jo
 
 | # | Feature | Description |
 |---|---------|-------------|
-| 📄 | **Resume Analyser** | Upload a PDF resume and receive a structured ATS score, skill gaps, and improvement suggestions powered by Gemini 2.5 Flash. |
-| 🎯 | **Job Matcher** | Compare your resume or skill set against real career roles; get ranked match scores and tailored advice. |
-| 🎙️ | **Interview Prep** | Generate role-specific and round-specific interview questions with expected answer frameworks. |
+| 📄 | **Resume Analyser** | Upload a PDF resume and receive a structured ATS score with breakdowns across formatting, keywords, structure, and readability — plus prioritised fix suggestions. |
+| 🎯 | **Job Matcher** | Compare your resume or skill set against real career roles; get ranked match scores and tailored apply tips. |
+| 🎙️ | **Interview Prep** | Generate role-specific and round-specific interview questions with hint frameworks. |
 | 🧱 | **Resume Builder** | Describe your experience, get AI-enhanced bullet points, and iterate on a polished resume interactively. |
 | 📜 | **LaTeX Export** | One-click export to a clean IIT-style LaTeX template, ready to compile on Overleaf or locally. |
 | 🔐 | **Google OAuth** | Secure sign-in via Google with JWT session management. |
@@ -40,14 +40,27 @@ HireU is a full-stack AI career assistant that walks users through the entire jo
 <details>
 <summary><strong>🧠 AI request pipeline</strong></summary>
 
-```mermaid
-flowchart LR
-  A["User input / PDF"] --> B["Frontend form"]
-  B --> C["Express API"]
-  C --> D["Auth + credit check"]
-  D --> E["Gemini prompt pipeline"]
-  E --> F["Structured JSON response"]
-  F --> G["Analysis · Match · Questions · Resume · LaTeX"]
+```
+User input / PDF
+      │
+      ▼
+Frontend form (React)
+      │
+      ▼
+Express API  ──►  Auth + credit check
+                        │
+                        ▼
+               Gemini prompt pipeline
+                        │
+                        ▼
+            Structured JSON response
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+    ATS Analysis   Job Match    Interview Qs
+                                      │
+                                      ▼
+                             Resume Builder / LaTeX
 ```
 
 </details>
@@ -56,14 +69,32 @@ flowchart LR
 
 ## Architecture
 
-```mermaid
-flowchart TD
-  U["👤 User"] --> FE["⚛️ Vercel Frontend\nhire-u-career-assistant.vercel.app"]
-  FE --> API["🚀 Render Backend\nhireu-careerassistant.onrender.com"]
-  API --> DB["🍃 MongoDB Atlas"]
-  API --> GEM["🤖 Google Gemini 2.5 Flash"]
-  API --> AUTH["🔐 Google OAuth 2.0"]
-  API --> PAY["💳 Razorpay (test mode)"]
+```
+                         ┌─────────────────────────────────┐
+                         │             👤 User              │
+                         └────────────────┬────────────────┘
+                                          │  HTTPS
+                                          ▼
+                    ┌─────────────────────────────────────────┐
+                    │         ⚛️  Vercel  (Frontend)           │
+                    │   hire-u-career-assistant.vercel.app     │
+                    │   React 19 · TypeScript · Tailwind v4    │
+                    └──────────────────┬──────────────────────┘
+                                       │  REST / JSON
+                                       ▼
+                    ┌─────────────────────────────────────────┐
+                    │         🚀  Render  (Backend)            │
+                    │    hireu-careerassistant.onrender.com    │
+                    │    Express 5 · TypeScript · JWT Auth     │
+                    └────┬──────────┬──────────┬──────────────┘
+                         │          │          │
+              ┌──────────┘   ┌──────┘   ┌─────┘
+              ▼              ▼          ▼
+   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+   │ 🍃 MongoDB   │  │ 🤖 Gemini    │  │ 🔐 Google    │  │ 💳 Razorpay  │
+   │    Atlas     │  │  2.5 Flash   │  │   OAuth 2.0  │  │  (test mode) │
+   │  User data   │  │  AI engine   │  │  Sign-in     │  │  Payments    │
+   └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 > **Note:** The Render free tier spins down after inactivity. The first request after a cold start may take 10–30 seconds.
@@ -90,32 +121,91 @@ flowchart TD
 
 ```
 HireU/
+│
 ├── backend/
 │   ├── src/
-│   │   ├── config/          # DB connection, Google OAuth, Gemini prompts
-│   │   ├── controllers/     # ai.ts, payment.ts, review.ts, user.ts
-│   │   ├── middlewares/     # isAuth.ts, trycatch.ts
-│   │   ├── models/          # User.ts, Review.ts
-│   │   ├── routes/          # ai, payment, review, user
-│   │   ├── services/        # latexGenerator.ts
-│   │   └── index.ts
+│   │   ├── config/
+│   │   │   ├── db.ts              # Mongoose connection to MongoDB Atlas (dbName: "ai-career")
+│   │   │   ├── googleconfig.ts    # Google OAuth 2.0 client setup
+│   │   │   └── prompt.ts          # Gemini prompt templates for all 4 AI features
+│   │   │
+│   │   ├── controllers/
+│   │   │   ├── ai.ts              # analyseResume, jobMatcher, interviewPrep, buildResume, generateLatex
+│   │   │   ├── payment.ts         # Razorpay checkout order creation + signature verification
+│   │   │   ├── review.ts          # Public review CRUD
+│   │   │   └── user.ts            # Google login handler, /me, /history
+│   │   │
+│   │   ├── middlewares/
+│   │   │   ├── isAuth.ts          # JWT Bearer token verification; attaches req.user
+│   │   │   └── trycatch.ts        # Async error-handler wrapper for all controllers
+│   │   │
+│   │   ├── models/
+│   │   │   ├── User.ts            # User schema: freeRequestsUsed, paidCredits, subscription,
+│   │   │   │                      #   history[]; methods: hasProAccess(), canMakeRequest()
+│   │   │   └── Review.ts          # Review schema: rating, comment, userName, userImage
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── ai.ts              # POST /api/ai/{analyse,jobmatcher,interview,buildresume,generate-latex}
+│   │   │   ├── payment.ts         # POST /api/payment/{checkout,verify}  GET /api/payment/status
+│   │   │   ├── review.ts          # GET/POST /api/review
+│   │   │   └── user.ts            # POST /api/user/login  GET /api/user/{me,history}
+│   │   │
+│   │   ├── services/
+│   │   │   └── latexGenerator.ts  # Builds IIT-style LaTeX resume string from structured IITResumeData
+│   │   │
+│   │   └── index.ts               # Express app bootstrap, CORS, routes mount, /health endpoint
+│   │
+│   ├── dist/                      # Compiled JS output (tsc build artifact, not committed)
 │   ├── .env.example
 │   ├── package.json
 │   └── tsconfig.json
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── context/
 │   │   ├── pages/
-│   │   ├── App.tsx
-│   │   └── main.tsx
+│   │   │   ├── Home.tsx           # Landing page (hero, features, pricing, reviews)
+│   │   │   ├── Login.tsx          # Google OAuth sign-in page
+│   │   │   ├── Analyse.tsx        # Resume Analyser — PDF upload → ATS score + suggestions
+│   │   │   ├── JobMatcher.tsx     # Job Matcher — skills/resume → ranked role matches
+│   │   │   ├── Interview.tsx      # Interview Prep — role + round → question bank
+│   │   │   ├── BuildResume.tsx    # Resume Builder — form → AI bullets → LaTeX export
+│   │   │   └── Account.tsx        # User profile, credit balance, usage history
+│   │   │
+│   │   ├── components/
+│   │   │   ├── CreditGate.tsx     # Modal shown when free requests exhausted; triggers Razorpay
+│   │   │   ├── ProtectedRoutes.tsx # Redirects unauthenticated users to /login
+│   │   │   ├── PublicRoutes.tsx   # Redirects authenticated users away from /login
+│   │   │   ├── navbar.tsx         # Top navigation with credit counter
+│   │   │   ├── hero.tsx           # Landing hero section
+│   │   │   ├── features.tsx       # Feature cards grid
+│   │   │   ├── pricing.tsx        # Pricing / credit pack section
+│   │   │   ├── reviews.tsx        # Community reviews carousel
+│   │   │   ├── ctabanner.tsx      # Call-to-action banner
+│   │   │   ├── footer.tsx
+│   │   │   └── loading.tsx        # Full-screen spinner
+│   │   │
+│   │   ├── context/
+│   │   │   └── AppContext.tsx     # Global state: user, isAuth, fetchUser(), LogoutUser()
+│   │   │
+│   │   ├── types.ts               # All shared TS interfaces (User, Analysis, Job, ResumeData,
+│   │   │                          #   IITResumeData, HistoryEntry, etc.)
+│   │   ├── utils.ts               # Helpers: toBase64, scoreColor, prioBg, downloadReport
+│   │   ├── ring.tsx               # Animated ring component used in hero
+│   │   ├── App.tsx                # React Router route definitions
+│   │   ├── main.tsx               # Vite entry; exports `server` base URL constant
+│   │   └── index.css              # Tailwind base + custom glass-card / btn-primary classes
+│   │
 │   ├── public/
-│   ├── .env.example
-│   ├── vercel.json
-│   └── vite.config.ts
+│   │   ├── favicon.svg
+│   │   ├── google.svg             # Used in Google sign-in button
+│   │   ├── icons.svg              # Sprite sheet for feature icons
+│   │   └── user.png               # Default avatar fallback
+│   │
+│   ├── vercel.json                # SPA rewrite: all routes → index.html
+│   ├── vite.config.ts
+│   └── package.json
 │
-├── render.yaml
+├── render.yaml                    # Render deployment config (build + start commands)
 └── README.md
 ```
 
@@ -211,8 +301,6 @@ VITE_GOOGLE_CLIENT_ID=...
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
-> `frontend/vercel.json` rewrites all routes to `index.html` so React Router works on hard refresh.
-
 ### Google OAuth (production)
 
 Add `https://hire-u-career-assistant.vercel.app` as an **Authorized JavaScript origin** alongside your localhost entry.
@@ -245,13 +333,13 @@ All protected routes require `Authorization: Bearer <token>`.
 
 ## Credit System
 
-| Tier | Requests |
-|------|---------|
-| Free | 10 requests on signup |
-| Paid credits | Top up via Razorpay (10 credits/pack, test mode) |
-| Pro | Unlimited (subscription-based, coming soon) |
+| Tier | Requests | How |
+|------|---------|-----|
+| Free | 10 requests | Granted on first login |
+| Paid credits | 40 credits for ₹29 | One-time Razorpay purchase (test mode) |
+| Pro | Unlimited | Subscription-based (coming soon) |
 
-Credit deduction logic: free requests are consumed first → then paid credits → Pro users are never counted.
+Deduction order: free requests first → paid credits → Pro users bypass all checks.
 
 ---
 
@@ -278,5 +366,6 @@ cd frontend && npm run build && npm run preview
 ## Notes
 
 - Never commit `.env` files or production secrets to the repository.
-- MongoDB Atlas requires your deployment IP to be whitelisted; Render's IPs change on restart — use **Allow access from anywhere** (`0.0.0.0/0`) for simplicity, or set up a static IP add-on.
-- The `@google/genai` SDK is used for all four AI features; model is set to `gemini-2.5-flash`.
+- MongoDB Atlas requires your deployment IP to be whitelisted. On Render's free tier, IPs change on restart — use **Allow access from anywhere** (`0.0.0.0/0`) or set up a static IP add-on.
+- The `@google/genai` SDK is used for all four AI features with `gemini-2.5-flash` as the model.
+- `frontend/vercel.json` rewrites all routes to `index.html` so React Router works on hard refresh.
