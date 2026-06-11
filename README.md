@@ -1,4 +1,4 @@
-# HireU - Resume Analyser
+# HireU - CareerAI 
 
 An AI-powered resume analysis and career development platform that helps users analyse resumes, match jobs, prep for interviews, and build polished resumes — all driven by Google Gemini API.
 
