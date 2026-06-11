@@ -1,144 +1,143 @@
 <div align="center">
 
-# 📚 HireU - Career Assistant
+# 🎓 HireU — AI Career Assistant
 
-AI-powered career preparation for resumes, job matching, interview practice, and resume building.
+**Resume analysis · Job matching · Interview prep · Resume builder**  
+From PDF to polished LaTeX resume — powered by Gemini AI.
 
-[![Frontend](https://img.shields.io/badge/Live%20App-Vercel-000000?style=for-the-badge&logo=vercel)](https://hire-u-career-assistant.vercel.app)
-[![Backend](https://img.shields.io/badge/API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=111111)](https://hireu-careerassistant.onrender.com)
+[![Live App](https://img.shields.io/badge/Live%20App-Vercel-000000?style=for-the-badge&logo=vercel)](https://hire-u-career-assistant.vercel.app)
+[![Backend API](https://img.shields.io/badge/API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=111111)](https://hireu-careerassistant.onrender.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=111111)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?style=for-the-badge&logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=ffffff)](https://www.mongodb.com/atlas)
 
-**Live App:** [hire-u-career-assistant.vercel.app](https://hire-u-career-assistant.vercel.app)  
-**Backend API:** [hireu-careerassistant.onrender.com](https://hireu-careerassistant.onrender.com)  
-**Health Check:** [API /health](https://hireu-careerassistant.onrender.com/health)
+**→ [hire-u-career-assistant.vercel.app](https://hire-u-career-assistant.vercel.app)**
 
 </div>
 
 ---
 
-## ✨ Overview
+## What is HireU?
 
-HireU is a full-stack AI career assistant that helps users move from resume to interview readiness in one workflow. Users can analyse their resume, match against jobs, prepare interview questions, build an improved resume, and export resume content as LaTeX.
+HireU is a full-stack AI career assistant that walks users through the entire job preparation workflow in one place — upload a resume, get a detailed ATS analysis, match it against relevant roles, generate interview questions tailored to the position, and rebuild the resume with AI suggestions. Everything exports cleanly to LaTeX for Overleaf.
 
-It is built with a React/Vite frontend, an Express/TypeScript backend, MongoDB, Google OAuth, Gemini AI, and Razorpay-ready payment routes.
+> **Demo & screenshots** — _coming soon_
 
-## 🧭 Table of Contents
+---
 
-- [Features](#-features)
-- [Live Architecture](#-live-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Local Setup](#-local-setup)
-- [Production Setup](#-production-setup)
-- [API Reference](#-api-reference)
-- [Deployment Checklist](#-deployment-checklist)
-- [Future Improvements](#-future-improvements)
+## Features
 
-## 🚀 Features
-
-| Feature | What it does |
-| --- | --- |
-| 📄 Resume Analyser | Upload a PDF resume and receive structured AI feedback. |
-| 🎯 Job Matcher | Compare resume data or manual skills against suitable career roles. |
-| 🎙️ Interview Prep | Generate role-specific and round-specific interview questions. |
-| 🧱 Resume Builder | Build, improve, export, and download a polished resume. |
-| 🧾 LaTeX Export | Generate editable LaTeX resume output for Overleaf or local compilation. |
-| 🔐 Google OAuth | Sign in securely using Google authentication. |
-| 🪙 Credits + Payments | Credit tracking, subscription fields, and Razorpay payment routes are wired. |
+| # | Feature | Description |
+|---|---------|-------------|
+| 📄 | **Resume Analyser** | Upload a PDF resume and receive a structured ATS score, skill gaps, and improvement suggestions powered by Gemini 2.5 Flash. |
+| 🎯 | **Job Matcher** | Compare your resume or skill set against real career roles; get ranked match scores and tailored advice. |
+| 🎙️ | **Interview Prep** | Generate role-specific and round-specific interview questions with expected answer frameworks. |
+| 🧱 | **Resume Builder** | Describe your experience, get AI-enhanced bullet points, and iterate on a polished resume interactively. |
+| 📜 | **LaTeX Export** | One-click export to a clean IIT-style LaTeX template, ready to compile on Overleaf or locally. |
+| 🔐 | **Google OAuth** | Secure sign-in via Google with JWT session management. |
+| 🪙 | **Credit System** | 10 free requests on signup. Top up with paid credit packs via Razorpay (test mode; live payments coming soon). |
 
 <details>
-<summary><strong>🧠 AI workflow</strong></summary>
+<summary><strong>🧠 AI request pipeline</strong></summary>
 
 ```mermaid
 flowchart LR
-  A["User input or resume PDF"] --> B["Frontend form / upload"]
+  A["User input / PDF"] --> B["Frontend form"]
   B --> C["Express API"]
-  C --> D["Auth + credit checks"]
+  C --> D["Auth + credit check"]
   D --> E["Gemini prompt pipeline"]
-  E --> F["Structured career response"]
-  F --> G["Resume analysis, job match, interview prep, or builder output"]
+  E --> F["Structured JSON response"]
+  F --> G["Analysis · Match · Questions · Resume · LaTeX"]
 ```
 
 </details>
 
-## 🏗️ Live Architecture
+---
+
+## Architecture
 
 ```mermaid
 flowchart TD
-  U["👤 User"] --> FE["⚛️ Vercel Frontend<br/>hire-u-career-assistant.vercel.app"]
-  FE --> API["🚀 Render Backend<br/>hireu-careerassistant.onrender.com"]
+  U["👤 User"] --> FE["⚛️ Vercel Frontend\nhire-u-career-assistant.vercel.app"]
+  FE --> API["🚀 Render Backend\nhireu-careerassistant.onrender.com"]
   API --> DB["🍃 MongoDB Atlas"]
-  API --> GEM["🤖 Google Gemini API"]
-  API --> AUTH["🔐 Google OAuth"]
-  API --> PAY["💳 Razorpay"]
+  API --> GEM["🤖 Google Gemini 2.5 Flash"]
+  API --> AUTH["🔐 Google OAuth 2.0"]
+  API --> PAY["💳 Razorpay (test mode)"]
 ```
 
-## 🛠️ Tech Stack
+> **Note:** The Render free tier spins down after inactivity. The first request after a cold start may take 10–30 seconds.
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
-| --- | --- |
-| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS v4 |
+|-------|-----------|
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS v4 |
 | Routing | React Router v7 |
-| API Client | Axios |
-| Auth | Google OAuth, JWT |
+| HTTP client | Axios |
+| Auth | Google OAuth 2.0, JWT |
 | Backend | Node.js, Express 5, TypeScript |
-| Database | MongoDB, Mongoose |
-| AI | Google Gemini via `@google/genai` |
-| Payments | Razorpay |
-| Deployment | Vercel frontend, Render backend |
+| Database | MongoDB Atlas, Mongoose |
+| AI | Google Gemini 2.5 Flash via `@google/genai` |
+| Payments | Razorpay (test mode) |
+| Deployment | Vercel (frontend), Render (backend) |
 
-## 📁 Project Structure
+---
 
-```text
-aicareer/
-|-- backend/
-|   |-- src/
-|   |   |-- config/
-|   |   |-- controllers/
-|   |   |-- middlewares/
-|   |   |-- models/
-|   |   |-- routes/
-|   |   |-- services/
-|   |   `-- index.ts
-|   |-- .env.example
-|   |-- package.json
-|   `-- tsconfig.json
-|-- frontend/
-|   |-- src/
-|   |   |-- components/
-|   |   |-- context/
-|   |   |-- pages/
-|   |   |-- App.tsx
-|   |   `-- main.tsx
-|   |-- public/
-|   |-- .env.example
-|   |-- vercel.json
-|   |-- package.json
-|   `-- vite.config.ts
-|-- render.yaml
-`-- README.md
+## Project Structure
+
+```
+HireU/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # DB connection, Google OAuth, Gemini prompts
+│   │   ├── controllers/     # ai.ts, payment.ts, review.ts, user.ts
+│   │   ├── middlewares/     # isAuth.ts, trycatch.ts
+│   │   ├── models/          # User.ts, Review.ts
+│   │   ├── routes/          # ai, payment, review, user
+│   │   ├── services/        # latexGenerator.ts
+│   │   └── index.ts
+│   ├── .env.example
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── public/
+│   ├── .env.example
+│   ├── vercel.json
+│   └── vite.config.ts
+│
+├── render.yaml
+└── README.md
 ```
 
-## ⚙️ Local Setup
+---
+
+## Local Setup
 
 ### Prerequisites
 
-- Node.js 20 recommended
-- MongoDB URI from MongoDB Atlas or a local MongoDB instance
-- Google Cloud OAuth 2.0 client ID and client secret
-- Gemini API key from Google AI Studio
-- Razorpay key ID and secret if testing payments
+- Node.js 20+
+- MongoDB URI (Atlas or local)
+- Google Cloud OAuth 2.0 credentials
+- Gemini API key from [Google AI Studio](https://aistudio.google.com)
+- Razorpay test keys (optional, only needed if testing payment flow)
 
-<details open>
-<summary><strong>Backend setup</strong></summary>
+### Backend
 
 ```bash
 cd backend
-cp .env.example .env
+cp .env.example .env   # fill in your values
 npm install
-npm run dev
+npm run dev            # runs on http://localhost:5000
 ```
 
 `backend/.env`
@@ -155,18 +154,13 @@ RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
-Backend runs at `http://localhost:5000`.
-
-</details>
-
-<details open>
-<summary><strong>Frontend setup</strong></summary>
+### Frontend
 
 ```bash
 cd frontend
-cp .env.example .env
+cp .env.example .env   # fill in your values
 npm install
-npm run dev
+npm run dev            # runs on http://localhost:5173
 ```
 
 `frontend/.env`
@@ -176,136 +170,113 @@ VITE_API_URL=http://localhost:5000
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-Frontend runs at `http://localhost:5173`.
+### Google OAuth (local)
 
-</details>
-
-## 🌐 Production Setup
-
-### Render Backend
-
-Required Render environment variables:
-
-```env
-FRONTEND_URL=https://hire-u-career-assistant.vercel.app
-MONGO_URI=your_mongodb_connection_string
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-API_KEY_GEMINI=your_gemini_api_key
-JWT_SEC=your_long_random_jwt_secret
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-```
-
-Render settings:
-
-```text
-Build Command: npm ci && npm run build
-Start Command: npm start
-Health Check Path: /health
-```
-
-### Vercel Frontend
-
-Required Vercel environment variables:
-
-```env
-VITE_API_URL=https://hireu-careerassistant.onrender.com
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-```
-
-Vercel settings:
-
-```text
-Root Directory: frontend
-Framework Preset: Vite
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm ci
-```
-
-### Google OAuth
-
-Add these Authorized JavaScript origins in Google Cloud Console:
-
-```text
-http://localhost:5173
-https://hire-u-career-assistant.vercel.app
-```
-
-The current flow uses `postmessage`, so no redirect URI is required unless the OAuth implementation changes later.
-
-## 📡 API Reference
-
-| Method | Route | Description | Auth |
-| --- | --- | --- | --- |
-| GET | `/` | API status | No |
-| GET | `/health` | Render health check | No |
-| POST | `/api/user/login` | Google OAuth login | No |
-| GET | `/api/user/me` | Current user profile | Yes |
-| GET | `/api/user/history` | User history | Yes |
-| GET | `/api/review` | List reviews | No |
-| POST | `/api/review` | Create review | Yes |
-| POST | `/api/ai/analyse` | Resume analysis | Yes |
-| POST | `/api/ai/jobmatcher` | Job matching | Yes |
-| POST | `/api/ai/interview` | Interview question generation | Yes |
-| POST | `/api/ai/buildresume` | Resume builder and improver | Yes |
-| POST | `/api/ai/generate-latex` | LaTeX resume generation | Yes |
-| POST | `/api/payment/checkout` | Razorpay order creation | Yes |
-| POST | `/api/payment/verify` | Razorpay payment verification | Yes |
-| GET | `/api/payment/status` | Credit and subscription status | Yes |
-
-Protected routes require:
-
-```text
-Authorization: Bearer <token>
-```
-
-## ✅ Deployment Checklist
-
-- [x] Frontend deployed on Vercel
-- [x] Backend deployed on Render
-- [x] Backend health route available at `/health`
-- [x] Frontend points to production API through `VITE_API_URL`
-- [x] Backend allows the Vercel origin through `FRONTEND_URL`
-- [ ] MongoDB Atlas production access configured
-- [ ] Gemini production key configured
-- [ ] Google OAuth production origin configured
-- [ ] Razorpay live keys configured when payments go live
-
-## 🧪 Build Commands
-
-```bash
-# Backend
-cd backend
-npm run build
-npm start
-
-# Frontend
-cd frontend
-npm run build
-npm run preview
-```
-
-## 🗺️ Future Improvements
-
-- Add screenshots and a short demo GIF.
-- Add automated API tests for protected AI routes.
-- Add rate limiting and stricter production CORS monitoring.
-- Add richer subscription and billing history UI.
-- Add CI checks for frontend and backend builds.
-
-## 📝 Notes
-
-- Render free instances may spin down after inactivity, so the first request after a cold start can be slower.
-- `frontend/vercel.json` rewrites frontend routes to `index.html`, keeping React Router refresh-safe.
-- Never commit real `.env` files or production secrets.
+Add `http://localhost:5173` as an **Authorized JavaScript origin** in your Google Cloud Console OAuth client. No redirect URI needed — the app uses the `postmessage` flow.
 
 ---
 
-<div align="center">
+## Production Setup
 
-Built with focus by [Krish Prasad](https://github.com/Krish-Prasad09)  
-⭐ Star the repo if HireU helps you ship better career tools.
+### Render (backend)
 
-</div>
+```env
+FRONTEND_URL=https://hire-u-career-assistant.vercel.app
+MONGO_URI=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+API_KEY_GEMINI=...
+JWT_SEC=...
+RAZORPAY_KEY_ID=...
+RAZORPAY_KEY_SECRET=...
+```
+
+| Setting | Value |
+|---------|-------|
+| Build Command | `npm ci && npm run build` |
+| Start Command | `npm start` |
+| Health Check Path | `/health` |
+
+### Vercel (frontend)
+
+```env
+VITE_API_URL=https://hireu-careerassistant.onrender.com
+VITE_GOOGLE_CLIENT_ID=...
+```
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `frontend` |
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+> `frontend/vercel.json` rewrites all routes to `index.html` so React Router works on hard refresh.
+
+### Google OAuth (production)
+
+Add `https://hire-u-career-assistant.vercel.app` as an **Authorized JavaScript origin** alongside your localhost entry.
+
+---
+
+## API Reference
+
+All protected routes require `Authorization: Bearer <token>`.
+
+| Method | Route | Description | Auth |
+|--------|-------|-------------|------|
+| GET | `/` | API status | — |
+| GET | `/health` | Render health check | — |
+| POST | `/api/user/login` | Google OAuth login / register | — |
+| GET | `/api/user/me` | Current user profile + credit status | ✓ |
+| GET | `/api/user/history` | Usage history (last 100 entries) | ✓ |
+| GET | `/api/review` | List public reviews | — |
+| POST | `/api/review` | Submit a review | ✓ |
+| POST | `/api/ai/analyse` | Resume analysis (PDF base64) | ✓ |
+| POST | `/api/ai/jobmatcher` | Job role matching | ✓ |
+| POST | `/api/ai/interview` | Interview question generation | ✓ |
+| POST | `/api/ai/buildresume` | Resume builder / bullet enhancer | ✓ |
+| POST | `/api/ai/generate-latex` | LaTeX resume generation | ✓ |
+| POST | `/api/payment/checkout` | Razorpay order creation | ✓ |
+| POST | `/api/payment/verify` | Razorpay payment verification | ✓ |
+| GET | `/api/payment/status` | Credit + subscription status | ✓ |
+
+---
+
+## Credit System
+
+| Tier | Requests |
+|------|---------|
+| Free | 10 requests on signup |
+| Paid credits | Top up via Razorpay (10 credits/pack, test mode) |
+| Pro | Unlimited (subscription-based, coming soon) |
+
+Credit deduction logic: free requests are consumed first → then paid credits → Pro users are never counted.
+
+---
+
+## Build Commands
+
+```bash
+# Backend
+cd backend && npm run build && npm start
+
+# Frontend
+cd frontend && npm run build && npm run preview
+```
+
+---
+
+## Future Improvements
+
+- Add screenshots and a short demo GIF.
+- Activate Razorpay live keys to enable real payments (currently test mode).
+- Add richer subscription and billing history UI.
+
+---
+
+## Notes
+
+- Never commit `.env` files or production secrets to the repository.
+- MongoDB Atlas requires your deployment IP to be whitelisted; Render's IPs change on restart — use **Allow access from anywhere** (`0.0.0.0/0`) for simplicity, or set up a static IP add-on.
+- The `@google/genai` SDK is used for all four AI features; model is set to `gemini-2.5-flash`.
