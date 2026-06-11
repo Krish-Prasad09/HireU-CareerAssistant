@@ -1,8 +1,8 @@
-# AI Career
+# HireU - Resume Analyser
 
-An AI-powered career assistant that helps users analyse resumes, match jobs, prep for interviews, and build polished resumes — all driven by Google Gemini.
+An AI-powered resume analysis and career development platform that helps users analyse resumes, match jobs, prep for interviews, and build polished resumes — all driven by Google Gemini API.
 
-> 🚀 **Deployment coming soon.** The app is currently running locally. A hosted version is in the pipeline.
+> 🚀 **Live Features**: Resume analysis, job matching, interview prep, and resume builder with LaTeX export. Deployment coming soon.
 
 ---
 
@@ -48,7 +48,7 @@ An AI-powered career assistant that helps users analyse resumes, match jobs, pre
 
 ```
 aicareer/
-├── ai-career-backend-master/
+├── backend/
 │   ├── src/
 │   │   ├── config/         # DB, Google OAuth, AI prompts
 │   │   ├── controllers/    # ai.ts, user.ts
@@ -58,9 +58,10 @@ aicareer/
 │   │   └── index.ts        # Express app entry
 │   ├── dist/               # Compiled JS output
 │   ├── .env
-│   └── package.json
+│   ├── package.json
+│   └── tsconfig.json
 │
-└── ai-career-frontend-master/
+└── frontend/
     ├── src/
     │   ├── components/     # Navbar, Footer, Pricing, Hero, etc.
     │   ├── context/        # AppContext (global state)
@@ -69,7 +70,12 @@ aicareer/
     │   ├── types.ts
     │   ├── utils.ts
     │   └── App.tsx
-    └── package.json
+    ├── public/             # Static assets
+    ├── index.html
+    ├── package.json
+    ├── tsconfig.json
+    ├── vite.config.ts
+    └── eslint.config.js
 ```
 
 ---
@@ -87,7 +93,7 @@ aicareer/
 ### 1. Backend
 
 ```bash
-cd ai-career-backend-master
+cd backend
 ```
 
 Create a `.env` file:
@@ -118,7 +124,7 @@ The server starts at `http://localhost:5000`.
 ### 2. Frontend
 
 ```bash
-cd ai-career-frontend-master
+cd frontend
 ```
 
 Create a `.env` file (Vite exposes variables prefixed with `VITE_`):
