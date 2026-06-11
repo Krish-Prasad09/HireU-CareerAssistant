@@ -1,82 +1,97 @@
 # HireU - Career Assistant
 
-HireU is an AI-powered career assistant that helps users analyse resumes, match jobs, prepare for interviews, and build polished resumes with LaTeX export. It uses a Vite/React frontend, an Express/TypeScript backend, MongoDB, Google OAuth, and Gemini.
+HireU is an AI-powered career assistant for resume analysis, job matching, interview preparation, and resume building. It combines a React/Vite frontend with a Node.js/Express API, MongoDB, Google OAuth, Gemini, and Razorpay-ready payment routes.
 
-## Features
+## Live Links
 
-- Resume Analyser: upload a PDF resume and get structured AI feedback.
-- Job Matcher: match yourself to relevant roles using manual skills input or resume upload.
-- Interview Prep: generate round-specific interview questions from manual input or a resume.
-- Resume Builder: create a resume from a form, improve an existing resume with AI, and export LaTeX.
-- Google OAuth login with JWT-backed authenticated API routes.
-- Credit and subscription model with Razorpay routes wired for payments.
+- Frontend: https://hire-u-career-assistant.vercel.app
+- Backend API: https://hireu-careerassistant.onrender.com
+- Health Check: https://hireu-careerassistant.onrender.com/health
+- Repository: https://github.com/Krish-Prasad09/HireU-CareerAssistant
+
+## What It Does
+
+- Resume Analyser: upload a PDF resume and receive structured AI feedback.
+- Job Matcher: compare resume or manual skills against suitable roles.
+- Interview Prep: generate role-specific interview questions from input or resume data.
+- Resume Builder: create, improve, export, and download resumes.
+- LaTeX Export: generate editable LaTeX resume output.
+- Google OAuth: sign in securely with Google.
+- Credits and Payments: user credits, subscription fields, and Razorpay payment routes are wired.
 
 ## Tech Stack
 
-### Frontend
-
-| Tech | Purpose |
+| Layer | Technology |
 | --- | --- |
-| React 19 + TypeScript | UI framework |
-| Vite 8 | Build tool and dev server |
-| Tailwind CSS v4 | Styling |
-| React Router v7 | Client-side routing |
-| `@react-oauth/google` | Google OAuth login |
-| Axios | HTTP client |
-| jsPDF | PDF export |
-| lucide-react | Icons |
+| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS v4 |
+| Routing | React Router v7 |
+| Auth | Google OAuth, JWT |
+| API | Node.js, Express 5, TypeScript |
+| Database | MongoDB, Mongoose |
+| AI | Google Gemini via `@google/genai` |
+| Payments | Razorpay |
+| Deployment | Vercel frontend, Render backend |
 
-### Backend
+## Architecture
 
-| Tech | Purpose |
-| --- | --- |
-| Node.js + Express 5 | REST API server |
-| TypeScript | Type safety |
-| MongoDB + Mongoose | Database and ODM |
-| `@google/genai` | Gemini-powered AI features |
-| Google APIs / OAuth | Authentication |
-| JSON Web Tokens | Session management |
-| Razorpay | Payment and credit routes |
+```text
+User Browser
+    |
+    v
+Vercel Frontend
+https://hire-u-career-assistant.vercel.app
+    |
+    | REST API requests
+    v
+Render Backend
+https://hireu-careerassistant.onrender.com
+    |
+    +--> MongoDB Atlas
+    +--> Google OAuth
+    +--> Gemini API
+    +--> Razorpay
+```
 
 ## Project Structure
 
 ```text
 aicareer/
-├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middlewares/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   └── index.ts
-│   ├── .env.example
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── pages/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── .env.example
-│   ├── vercel.json
-│   ├── package.json
-│   └── vite.config.ts
-├── render.yaml
-└── README.md
+|-- backend/
+|   |-- src/
+|   |   |-- config/
+|   |   |-- controllers/
+|   |   |-- middlewares/
+|   |   |-- models/
+|   |   |-- routes/
+|   |   |-- services/
+|   |   `-- index.ts
+|   |-- .env.example
+|   |-- package.json
+|   `-- tsconfig.json
+|-- frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- context/
+|   |   |-- pages/
+|   |   |-- App.tsx
+|   |   `-- main.tsx
+|   |-- .env.example
+|   |-- vercel.json
+|   |-- package.json
+|   `-- vite.config.ts
+|-- render.yaml
+`-- README.md
 ```
 
-## Running Locally
+## Local Setup
 
 ### Prerequisites
 
 - Node.js 20 recommended.
-- MongoDB URI from MongoDB Atlas or a local MongoDB server.
-- Google Cloud OAuth 2.0 web client.
+- MongoDB URI from MongoDB Atlas or a local MongoDB instance.
+- Google Cloud OAuth 2.0 client ID and client secret.
 - Gemini API key from Google AI Studio.
-- Razorpay key ID and key secret if payment routes are enabled.
+- Razorpay key ID and key secret if testing payments.
 
 ### Backend
 
@@ -87,7 +102,7 @@ npm install
 npm run dev
 ```
 
-Update `backend/.env`:
+`backend/.env`
 
 ```env
 PORT=5000
@@ -101,7 +116,11 @@ RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
-The API runs at `http://localhost:5000`.
+Backend runs at:
+
+```text
+http://localhost:5000
+```
 
 ### Frontend
 
@@ -112,40 +131,26 @@ npm install
 npm run dev
 ```
 
-Update `frontend/.env`:
+`frontend/.env`
 
 ```env
 VITE_API_URL=http://localhost:5000
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-The app runs at `http://localhost:5173`.
+Frontend runs at:
 
-## Production Deployment
-
-The repo is configured for this deployment split:
-
-- Backend API: Render web service using `render.yaml`.
-- Frontend app: Vercel Vite deployment using `frontend/vercel.json`.
-- Database: MongoDB Atlas.
-
-### 1. Push the Code to GitHub
-
-Make sure the latest code is pushed to GitHub:
-
-```bash
-git add .
-git commit -m "Prepare HireU for deployment"
-git push origin main
+```text
+http://localhost:5173
 ```
 
-### 2. Deploy the Backend on Render
+## Production Environment
 
-1. Open [Render](https://render.com).
-2. Choose **New +** then **Blueprint**.
-3. Connect this GitHub repository.
-4. Render will detect `render.yaml` and create the `hireu-career-assistant-api` web service.
-5. Add these environment variables in Render:
+### Render Backend
+
+The backend is deployed on Render.
+
+Required Render environment variables:
 
 ```env
 FRONTEND_URL=https://hire-u-career-assistant.vercel.app
@@ -158,98 +163,102 @@ RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
-Render will provide a backend URL like:
+Render uses:
 
 ```text
-https://hireu-careerassistant.onrender.com
+Build Command: npm ci && npm run build
+Start Command: npm start
+Health Check Path: /health
 ```
 
-Confirm it is live by opening:
+### Vercel Frontend
 
-```text
-https://hireu-careerassistant.onrender.com/health
-```
+The frontend is deployed on Vercel.
 
-### 3. Deploy the Frontend on Vercel
-
-1. Open [Vercel](https://vercel.com).
-2. Import the same GitHub repository.
-3. Set the project root directory to `frontend`.
-4. Use these build settings:
-
-```text
-Framework Preset: Vite
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm ci
-```
-
-5. Add these environment variables in Vercel:
+Required Vercel environment variables:
 
 ```env
 VITE_API_URL=https://hireu-careerassistant.onrender.com
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-6. Deploy the project.
+Vercel uses:
 
-### 4. Update Google OAuth
+```text
+Root Directory: frontend
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm ci
+```
 
-In Google Cloud Console, update the OAuth client used by the app:
+## Google OAuth Setup
 
-- Authorized JavaScript origins:
-  - `http://localhost:5173`
-  - `https://hire-u-career-assistant.vercel.app`
-- Authorized redirect URIs are not required for the current `postmessage` OAuth flow.
+In Google Cloud Console, add these Authorized JavaScript origins:
 
-### 5. Final Production Checks
+```text
+http://localhost:5173
+https://hire-u-career-assistant.vercel.app
+```
 
-- Open the Vercel URL.
-- Sign in with Google.
-- Test resume analysis, job matching, interview prep, and resume builder.
-- Check Render logs if any API request fails.
-- Keep Render and Vercel environment variables in sync if keys change.
+The current auth flow uses `postmessage`, so no redirect URI is required unless the OAuth implementation changes.
 
 ## API Routes
 
-```text
-GET   /                         # API status
-GET   /health                   # Render health check
-POST  /api/user/login           # Google OAuth login
-GET   /api/user/me              # Current user profile
-GET   /api/user/history         # User history
-GET   /api/review               # Reviews
-POST  /api/review               # Create review
-POST  /api/ai/analyse           # Resume analysis
-POST  /api/ai/jobmatcher        # Job matching
-POST  /api/ai/interview         # Interview question generation
-POST  /api/ai/buildresume       # Resume builder / improver
-POST  /api/ai/generate-latex    # LaTeX resume generation
-POST  /api/payment/checkout     # Razorpay order
-POST  /api/payment/verify       # Razorpay verification
-GET   /api/payment/status       # Credit/subscription status
-```
+| Method | Route | Description |
+| --- | --- | --- |
+| GET | `/` | API status |
+| GET | `/health` | Render health check |
+| POST | `/api/user/login` | Google OAuth login |
+| GET | `/api/user/me` | Current user profile |
+| GET | `/api/user/history` | User history |
+| GET | `/api/review` | List reviews |
+| POST | `/api/review` | Create review |
+| POST | `/api/ai/analyse` | Resume analysis |
+| POST | `/api/ai/jobmatcher` | Job matching |
+| POST | `/api/ai/interview` | Interview question generation |
+| POST | `/api/ai/buildresume` | Resume builder and improver |
+| POST | `/api/ai/generate-latex` | LaTeX resume generation |
+| POST | `/api/payment/checkout` | Razorpay order creation |
+| POST | `/api/payment/verify` | Razorpay payment verification |
+| GET | `/api/payment/status` | Credit and subscription status |
 
-AI and payment routes require:
+Protected routes require:
 
 ```text
 Authorization: Bearer <token>
 ```
 
-## LaTeX Resume Generator
+## Deployment Checklist
 
-The resume builder can export an editable `.tex` file based on form data.
+- Render backend is live at `https://hireu-careerassistant.onrender.com`.
+- Vercel frontend is live at `https://hire-u-career-assistant.vercel.app`.
+- `VITE_API_URL` points to the Render backend URL.
+- `FRONTEND_URL` points to the Vercel frontend URL.
+- Google OAuth contains the Vercel production origin.
+- MongoDB Atlas allows connections from Render.
+- Gemini and Razorpay keys are configured in Render.
 
-- Converts resume form data directly to LaTeX.
-- Uses an IIT Indore-style resume template.
-- Includes personal details, education, experience, projects, and skills.
-- Can be compiled locally with MiKTeX or TeX Live, or online with Overleaf.
+## Build Commands
 
-## Deployment Notes
+Backend:
 
-- `VITE_API_URL` must point to the deployed backend URL in production.
-- `FRONTEND_URL` must point to the deployed Vercel URL in production.
-- `VITE_GOOGLE_CLIENT_ID` must match the Google OAuth client configured for the deployed frontend domain.
-- Render sets `PORT` automatically; local development falls back to `5000`.
-- The backend exposes `/health` for Render health checks.
-- `frontend/vercel.json` rewrites all routes to `index.html` so direct navigation works with React Router.
+```bash
+cd backend
+npm run build
+npm start
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run build
+npm run preview
+```
+
+## Notes
+
+- Render free instances may spin down after inactivity, so the first request after a cold start can be slow.
+- `frontend/vercel.json` rewrites all frontend routes to `index.html`, which keeps React Router working on page refresh.
+- Never commit real `.env` files or production secrets.
