@@ -47,7 +47,7 @@ export const analyseResume = TryCatch(async (req, res) => {
             {
                 role: "user",
                 parts: [
-                    { text: ResumeAnalyserPrompt },
+                    { text: `Current Date: ${new Date().toDateString()}\n\n${ResumeAnalyserPrompt}` },
                     {
                         inlineData: {
                             mimeType: "application/pdf",
@@ -89,7 +89,7 @@ export const jobMatcher = TryCatch(async (req, res) => {
             showPayment: true,
         });
     }
-    const parts = [{ text: JobMatcherPrompt(mode, skills, experience) }];
+    const parts = [{ text: `Current Date: ${new Date().toDateString()}\n\n${JobMatcherPrompt(mode, skills, experience)}` }];
     if (mode === "resume") {
         parts.push({
             inlineData: {
@@ -135,7 +135,7 @@ export const generateInterview = TryCatch(async (req, res) => {
         });
     }
     const parts = [
-        { text: generateInterviewPrompt(round, mode, skills, experience) },
+        { text: `Current Date: ${new Date().toDateString()}\n\n${generateInterviewPrompt(round, mode, skills, experience)}` },
     ];
     if (mode === "resume") {
         parts.push({
